@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="styles.css" >
+</head>
+<body>
+    <h1>Simple Calculator</h1>
+    <form id="calculator-form">
+        <input type="number" id="num1" placeholder="First Number" required>
+        <select id="operator">
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+            <option value="%">%</option>
+        </select>
+        <input type="number" id="num2" placeholder="Second Number" required>
+        <button type="submit">Calculate</button>
+    </form>
+    <h2 class="res">Result: <span id="result"></span></h2>
+    <script>
+        const form = document.getElementById('calculator-form');
+        const resultSpan = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const num1 = parseFloat(document.getElementById('num1').value);
+            const num2 = parseFloat(document.getElementById('num2').value);
+            const operator = document.getElementById('operator').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ num1, num2, operator })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultSpan.textContent = data.result;
+                } else {
+                    resultSpan.textContent = data.error;
+                }
+            } catch (error) {
+                resultSpan.textContent = 'Error connecting to the server.';
+            }
+        });
+    </script>
+</body>
+</html>
