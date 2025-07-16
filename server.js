@@ -1,13 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+
+// Serve static files from the current directory
+app.use(express.static(path.join(__dirname)));
 
 // Route to perform calculation
 app.post('/calculate', (req, res) => {
@@ -31,7 +35,7 @@ app.post('/calculate', (req, res) => {
             result = num1 / num2;
             break;
         case '%':
-            result=num1 % num2;
+            result = num1 % num2;
             break;
         default:
             return res.status(400).json({ error: 'Invalid operator.' });
@@ -40,7 +44,12 @@ app.post('/calculate', (req, res) => {
     res.json({ result });
 });
 
+// Route to serve index.html on root
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
